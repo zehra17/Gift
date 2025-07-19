@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sizin İçin Bir Hediye</title>
+    <!-- Google'dan masalsı bir yazı tipi ekliyoruz -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* Temel Stil Ayarları */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            color: #f0f0f0;
+            font-family: 'Lora', serif;
+            overflow: hidden; /* Sayfanın kaydırılmasını engelliyoruz */
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+        }
+
+        /* Başlangıç Ekranı Stili */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #090a0f;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 1.5s ease-out;
+        }
+
+        #splash-screen h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        #start-button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-family: 'Cinzel', serif;
+            color: #f0f0f0;
+            background: transparent;
+            border: 2px solid #f0f0f0;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #start-button:hover {
+            background: #f0f0f0;
+            color: #0a0a10;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Ana İçerik Başlangıçta Gizli */
+        main {
+            opacity: 0;
+            transition: opacity 1.5s ease-in;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 5vh 20px;
+            box-sizing: border-box;
+        }
+
+        /* Başrol: Resmin kendisi için stil */
+        .main-image {
+            max-width: 90%;
+            width: 450px;
+            border-radius: 15px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-bottom: 5vh;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 1.5s ease-out 0.5s, transform 1.5s ease-out 0.5s;
+        }
+        
+        .main-image.visible {
+             opacity: 1;
+             transform: scale(1);
+        }
+        
+        /* Hikaye Paragraflarını tutan konteyner */
+        #story-container {
+            position: relative;
+            max-width: 700px;
+            width: 100%;
+            min-height: 250px; /* Paragrafların sığacağı bir alan */
+        }
+
+        /* Hikaye Paragrafları Stili */
+        .story-paragraph {
+            width: 100%;
+            text-align: center;
+            font-size: 1.6rem;
+            line-height: 1.7;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+            
+            opacity: 0;
+            position: absolute; /* Paragrafları üst üste bindiriyoruz */
+            top: 0;
+            left: 0;
+            transition: opacity 1.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .story-paragraph.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .final-note {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: #f0f0f0; 
+        }
+        
+        /* İleri Butonu Stili */
+        #next-button {
+            margin-top: 4vh;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-family: 'Cinzel', serif;
+            color: #f0f0f0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        #next-button.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #next-button:hover {
+            background: #f0f0f0;
+            color: #0a0a10;
+        }
+
+        #stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .story-paragraph {
+                font-size: 1.3rem;
+            }
+            .main-image {
+                width: 300px;
+            }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Hareketli yıldızlar için alan -->
+    <div id="stars-container"></div>
+
+    <!-- Müzik dosyası -->
+    <audio id="background-music" loop>
+        <source src="music.mp3" type="audio/mpeg">
+        Tarayıcınız ses dosyasını desteklemiyor.
+    </audio>
+
+    <!-- Başlangıç Ekranı -->
+    <div id="splash-screen">
+        <h1>Güneşin Mührü</h1>
+        <button id="start-button">Hikayeyi Başlat</button>
+    </div>
+
+    <!-- Ana İçerik Alanı -->
+    <main id="main-content">
+
+        <!-- Başrol: O Özel Resim -->
+        <img src="picture.jpg" alt="Güneşin Mührü Altındaki Çift" class="main-image">
+
+        <!-- Hikaye Paragraflarını tutan konteyner -->
+        <div id="story-container">
+            <div class="story-paragraph">
+                <p>Evvel zaman içinde, kalbur saman içinde, diyarların en yeşilinde, biri bilginin ve cesaretin, diğeri ise neşenin ve şifanın koruyucusu olan iki ruh yaşarmış. Onlar ne kral ne de kraliçeydi; onlar, diyarı ayakta tutan dengeydiler.</p>
+            </div>
+            <div class="story-paragraph">
+                <p>Adamın pelerinine bilgelik, kadının saçlarına ise en nadide çiçekler işlenmişti. Birlikte olduklarında, etraflarındaki her şey canlanır, en solgun yapraklar bile yeşerirdi. Onların birliği, gökyüzündeki güneşin yeryüzüne bir hediyesi gibiydi.</p>
+            </div>
+            <div class="story-paragraph">
+                <p>Bir gün, gökyüzündeki o ulu güneş, onların bu saf sevgisini ve uyumunu onurlandırmak için yeryüzüne bir mühür gönderdi. Bu mühür, onların başının üzerinde parlayarak, "Sizin sevginiz, bu topraklara ışık ve umut veren bir kanundur," diye fısıldadı.</p>
+            </div>
+            <div class="story-paragraph">
+                 <p>O günden sonra, ne zaman bir araya gelseler, başlarının üzerindeki o görünmez mühür parlar, etraflarına sadece kendilerinin değil, onları izleyen herkesin içini ısıtan bir enerji yayılırdı.</p>
+            </div>
+            <div class="story-paragraph">
+                 <p>Ve derler ki, o diyara yolu düşen her kim olursa olsun, onların birliğinden yayılan bu sıcaklığı hisseder, umutla dolar ve kendi yolculuğuna daha güçlü devam edermiş.</p>
+            </div>
+            <div class="story-paragraph final-note">
+                <p>Bu hikaye, ilhamını sizin birliğinizden aldı.<br>Sevgiyle...</p>
+            </div>
+        </div>
+        
+        <!-- Hikaye İlerleme Butonu -->
+        <button id="next-button">İleri &rarr;</button>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startButton = document.getElementById('start-button');
+            const splashScreen = document.getElementById('splash-screen');
+            const mainContent = document.getElementById('main-content');
+            const music = document.getElementById('background-music');
+            const nextButton = document.getElementById('next-button');
+            const mainImage = document.querySelector('.main-image');
+            
+            const storyParagraphs = document.querySelectorAll('.story-paragraph');
+            let currentParagraphIndex = 0;
+
+            startButton.addEventListener('click', () => {
+                music.play();
+                splashScreen.style.opacity = '0';
+                mainContent.style.opacity = '1';
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                    mainImage.classList.add('visible');
+                    storyParagraphs[0].classList.add('visible');
+                    nextButton.classList.add('visible');
+                }, 1500);
+            });
+
+            nextButton.addEventListener('click', () => {
+                // Mevcut paragrafı gizle
+                storyParagraphs[currentParagraphIndex].classList.remove('visible');
+
+                // Bir sonraki paragrafa geç
+                currentParagraphIndex++;
+
+                if (currentParagraphIndex < storyParagraphs.length) {
+                    // Yeni paragrafı göster
+                    storyParagraphs[currentParagraphIndex].classList.add('visible');
+                }
+                
+                // Eğer son paragrafa gelindiyse, butonu gizle
+                if (currentParagraphIndex === storyParagraphs.length - 1) {
+                    nextButton.classList.remove('visible');
+                }
+            });
+
+            // Arka plana rastgele yıldızlar ekleyen fonksiyon
+            function createStars() {
+                const container = document.getElementById('stars-container');
+                const starCount = 100;
+                for (let i = 0; i < starCount; i++) {
+                    const star = document.createElement('div');
+                    star.classList.add('star');
+                    const size = Math.random() * 2 + 1;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    star.style.top = `${Math.random() * 100}%`;
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.animationDelay = `${Math.random() * 5}s`;
+                    container.appendChild(star);
+                }
+            }
+            createStars();
+        });
+    </script>
+
+</body>
+</html>
